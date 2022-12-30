@@ -11,6 +11,17 @@ const readTalker = async () => {
     }
 };
 
+const writeTalker = async (person) => {
+    try {
+        const talker = await readTalker();
+        talker.push(person);
+        await fs.writeFile(join(__dirname, '..', 'talker.json'), JSON.stringify(talker, null, 2)); 
+    } catch (error) {
+        throw new Error(`Não foi possível editar o arquivo: ${error.message}`);
+    }
+};
+
 module.exports = {
     readTalker,
+    writeTalker,
 };

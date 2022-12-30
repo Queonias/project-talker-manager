@@ -5,7 +5,11 @@ const { validateEmail, validatePassword } = require('../middlewares/authLogin');
 const router = express.Router();
 
 router.post('/login', validateEmail, validatePassword, (__req, res) => {
-    res.status(200).json({ token: generateToken() });
+    try {
+        return res.status(200).json({ token: generateToken() });   
+    } catch (e) {
+        return res.status(500).send({ message: `Algo deu errado! Mensagem: ${e.message}` });
+    }
 });
 
 module.exports = router;

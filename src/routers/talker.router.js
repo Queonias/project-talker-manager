@@ -1,5 +1,6 @@
 const express = require('express');
-const { readTalker } = require('../utils/fsUtils');
+const { readTalker, writeTalker } = require('../utils/fsUtils');
+const { validateToken, validateName } = require('../middlewares/authTalker');
 
 const router = express.Router();
 
@@ -19,6 +20,18 @@ router.get('/talker/:id', async (req, res) => {
         return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
   } catch (e) {
     return res.status(500).send({ message: `Algo deu errado! Mensagem: ${e.message}` });
+  }
+});
+
+router.post('/talker', validateToken, validateName, async (req, res) => {
+  try { 
+    const id = Date.now();
+    const person = req.body;
+    const personWithId = { id, ...person };
+    await writeTalker(personWithId);
+    res.status(201).json(personWithId);
+  } catch (e) {
+    res.status(500).send({ message: `Algo deu errado! Mensagem: ${e.message}` });
   }
 });
 
