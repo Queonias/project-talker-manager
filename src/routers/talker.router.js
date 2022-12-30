@@ -1,17 +1,11 @@
 const express = require('express');
 const { readTalker, writeTalker } = require('../utils/fsUtils');
-const {
-  validateToken,
-  validateName,
-  validateAge,
-  validateTalk,
-  validateRate,
-  validateWatchedAt,
-} = require('../middlewares/authTalker');
+const handleError = require('../utils/handleError');
+const validations = require('../middlewares/authTalker');
 
 const router = express.Router();
 
-router.get('/talker', async (req, res) => {
+router.get('/talker', async (_req, res) => {
   const talkers = await readTalker();
   res.status(200).json(talkers);
 });
@@ -28,21 +22,11 @@ router.get('/talker/:id', async (req, res) => {
       .status(404)
       .json({ message: 'Pessoa palestrante não encontrada' });
   } catch (e) {
-    return res
-      .status(500)
-      .send({ message: `Algo deu errado! Mensagem: ${e.message}` });
+    handleError(res, e);
   }
 });
 
-router.post(
-  '/talker',
-  validateToken,
-  validateName,
-  validateAge,
-  validateTalk,
-  validateWatchedAt,
-  validateRate,
-  async (req, res) => {
+router.post('/talker', ...validations, async (req, res) => {
     try {
       const talker = await readTalker();
       const id = talker.length + 1;
@@ -51,11 +35,8 @@ router.post(
       await writeTalker(personWithId);
       res.status(201).json(personWithId);
     } catch (e) {
-      res
-        .status(500)
-        .send({ message: `Algo deu errado! Mensagem: ${e.message}` });
+      handleError(res, e);
     }
-  },
-);
+  });
 
 module.exports = router;

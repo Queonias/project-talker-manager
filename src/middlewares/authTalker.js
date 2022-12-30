@@ -64,11 +64,11 @@ const validateRate = (req, res, next) => {
     next();
 };
 
-module.exports = {
+module.exports = [
   validateToken,
   validateName,
   validateAge,
   validateTalk,
   validateWatchedAt,
   validateRate,
-};
+];
