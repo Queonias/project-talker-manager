@@ -5,6 +5,7 @@ const {
   validateName,
   validateAge,
   validateTalk,
+  validateRate,
   validateWatchedAt,
 } = require('../middlewares/authTalker');
 
@@ -40,9 +41,11 @@ router.post(
   validateAge,
   validateTalk,
   validateWatchedAt,
+  validateRate,
   async (req, res) => {
     try {
-      const id = Date.now();
+      const talker = await readTalker();
+      const id = talker.length + 1;
       const person = req.body;
       const personWithId = { id, ...person };
       await writeTalker(personWithId);
