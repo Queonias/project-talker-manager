@@ -1,9 +1,11 @@
 const fs = require('fs/promises');
 const { join } = require('path');
 
+const PATH = join(__dirname, '..', 'talker.json');
+
 const readTalker = async () => {
     try {
-        const data = await fs.readFile(join(__dirname, '..', 'talker.json'));
+        const data = await fs.readFile(PATH);
         const talker = JSON.parse(data);
         return talker;   
     } catch (error) {
@@ -15,7 +17,7 @@ const writeTalker = async (person) => {
     try {
         const talker = await readTalker();
         talker.push(person);
-        await fs.writeFile(join(__dirname, '..', 'talker.json'), JSON.stringify(talker, null, 2)); 
+        await fs.writeFile(PATH, JSON.stringify(talker, null, 2)); 
     } catch (error) {
         throw new Error(`Não foi possível editar o arquivo: ${error.message}`);
     }
@@ -26,7 +28,7 @@ const editeTalker = async (id, person) => {
         const talker = await readTalker();
         const index = talker.findIndex((p) => p.id === id);
         talker.splice(index, 1, { id, ...person });
-        await fs.writeFile(join(__dirname, '..', 'talker.json'), JSON.stringify(talker, null, 2)); 
+        await fs.writeFile(PATH, JSON.stringify(talker, null, 2)); 
     } catch (error) {
         throw new Error(`Não foi possível atualizar o arquivo: ${error.message}`);
     }
@@ -37,7 +39,7 @@ const deleteTalker = async (id) => {
         const talker = await readTalker();
         const index = talker.findIndex((p) => p.id === id);
         talker.splice(index, 1);
-        await fs.writeFile(join(__dirname, '..', 'talker.json'), JSON.stringify(talker, null, 2));
+        await fs.writeFile(PATH, JSON.stringify(talker, null, 2));
     } catch (error) {
         throw new Error(`Não foi possível deletar o arquivo: ${error.message}`);
     }
