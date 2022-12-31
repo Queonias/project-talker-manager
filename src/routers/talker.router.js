@@ -8,8 +8,24 @@ const [validateToken] = validations;
 const router = express.Router();
 
 router.get('/talker', async (_req, res) => {
+  console.log('talker');
   const talkers = await readTalker();
   res.status(200).json(talkers);
+});
+
+router.get('/talker/search', validateToken, async (req, res) => {
+  try {
+    const searchTerm = req.query.q;
+    console.log(searchTerm, 'searchTerm');
+    const talker = await readTalker();
+    if (!searchTerm) {
+      return res.status(200).json(talker);
+    }
+    const people = talker.filter((p) => p.name.includes(searchTerm));
+    return res.status(200).json(people);
+  } catch (e) {
+    handleError(res, e);
+  }
 });
 
 router.get('/talker/:id', async (req, res) => {
@@ -55,7 +71,7 @@ router.post('/talker', ...validations, async (req, res) => {
     try {
       const { id } = Number(req.params.id);
       await deleteTalker(id);
-      return res.status(204).json({ massage: 'deu certo' });
+      return res.sendStatus(204);
     } catch (e) {
       handleError(res, e);
     }
