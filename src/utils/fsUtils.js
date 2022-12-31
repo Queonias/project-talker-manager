@@ -21,7 +21,19 @@ const writeTalker = async (person) => {
     }
 };
 
+const editeTalker = async (id, person) => {
+    try {
+        const talker = await readTalker();
+        const index = talker.findIndex((p) => p.id === id);
+        talker.splice(index, 1, { id, ...person });
+        await fs.writeFile(join(__dirname, '..', 'talker.json'), JSON.stringify(talker, null, 2)); 
+    } catch (error) {
+        throw new Error(`Não foi possível atualizar o arquivo: ${error.message}`);
+    }
+};
+
 module.exports = {
     readTalker,
     writeTalker,
+    editeTalker,
 };

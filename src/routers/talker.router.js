@@ -1,5 +1,5 @@
 const express = require('express');
-const { readTalker, writeTalker } = require('../utils/fsUtils');
+const { readTalker, writeTalker, editeTalker } = require('../utils/fsUtils');
 const handleError = require('../utils/handleError');
 const validations = require('../middlewares/authTalker');
 
@@ -15,12 +15,11 @@ router.get('/talker/:id', async (req, res) => {
     const id = Number(req.params.id);
     const talker = await readTalker();
     const person = talker.find((p) => p.id === id);
-    if (person !== undefined) {
-      return res.status(200).json(person);
+    if (person) {
+      res.status(200).json(person);
+    } else {
+      res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
     }
-    return res
-      .status(404)
-      .json({ message: 'Pessoa palestrante não encontrada' });
   } catch (e) {
     handleError(res, e);
   }
@@ -34,6 +33,17 @@ router.post('/talker', ...validations, async (req, res) => {
       const personWithId = { id, ...person };
       await writeTalker(personWithId);
       res.status(201).json(personWithId);
+    } catch (e) {
+      handleError(res, e);
+    }
+  });
+
+  router.put('/talker/:id', ...validations, async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const person = req.body;
+      await editeTalker(id, person);
+      return res.status(200).json({ id, ...person });
     } catch (e) {
       handleError(res, e);
     }
