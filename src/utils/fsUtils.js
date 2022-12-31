@@ -32,8 +32,20 @@ const editeTalker = async (id, person) => {
     }
 };
 
+const deleteTalker = async (id) => {
+    try {
+        const talker = await readTalker();
+        const index = talker.findIndex((p) => p.id === id);
+        talker.splice(index, 1);
+        await fs.writeFile(join(__dirname, '..', 'talker.json'), JSON.stringify(talker, null, 2));
+    } catch (error) {
+        throw new Error(`Não foi possível deletar o arquivo: ${error.message}`);
+    }
+};
+
 module.exports = {
     readTalker,
     writeTalker,
     editeTalker,
+    deleteTalker,
 };

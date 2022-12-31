@@ -1,7 +1,9 @@
 const express = require('express');
-const { readTalker, writeTalker, editeTalker } = require('../utils/fsUtils');
+const { readTalker, writeTalker, editeTalker, deleteTalker } = require('../utils/fsUtils');
 const handleError = require('../utils/handleError');
 const validations = require('../middlewares/authTalker');
+
+const [validateToken] = validations;
 
 const router = express.Router();
 
@@ -44,6 +46,16 @@ router.post('/talker', ...validations, async (req, res) => {
       const person = req.body;
       await editeTalker(id, person);
       return res.status(200).json({ id, ...person });
+    } catch (e) {
+      handleError(res, e);
+    }
+  });
+
+  router.delete('/talker/:id', validateToken, async (req, res) => {
+    try {
+      const { id } = Number(req.params.id);
+      await deleteTalker(id);
+      return res.status(204).json({ massage: 'deu certo' });
     } catch (e) {
       handleError(res, e);
     }
